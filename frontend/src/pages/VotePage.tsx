@@ -14,9 +14,15 @@ function getCompiledContract() {
     vote_choice: () => [{}, 0n],
   } as any;
 
-  const contractInstance = new Contract(dummyWitnesses);
+  // We must pass a constructor (class) to make(), not an instance.
+  // We wrap the Contract class to inject the dummy witnesses automatically.
+  class WrappedContract extends Contract {
+    constructor() {
+      super(dummyWitnesses);
+    }
+  }
 
-  return CompiledContract.make('VeilContract', contractInstance).pipe(
+  return CompiledContract.make('VeilContract', WrappedContract).pipe(
     CompiledContract.withWitnesses(dummyWitnesses),
     CompiledContract.withCompiledFileAssets(
       new URL('/managed', window.location.origin).toString(),
