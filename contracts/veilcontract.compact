@@ -81,13 +81,13 @@ export circuit cast_vote(): [] {
   total_votes = disclose((total_votes + 1) as Uint<32>);
 
   // Tally vote — choice stays in ZK circuit, only counters update
-  if (choice == 0) {
+  if (disclose(choice == 0)) {
     votes_for = disclose((votes_for + 1) as Uint<32>);
   }
-  if (choice == 1) {
+  if (disclose(choice == 1)) {
     votes_against = disclose((votes_against + 1) as Uint<32>);
   }
-  if (choice == 2) {
+  if (disclose(choice == 2)) {
     votes_abstain = disclose((votes_abstain + 1) as Uint<32>);
   }
 }
