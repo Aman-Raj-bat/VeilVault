@@ -5,7 +5,7 @@
   "type": "module",
   "engines": { "node": ">=22.0.0" },
   "scripts": {
-    "compile": "compact compile contracts/veilcontract.compact contracts/managed/veilcontract",
+    "compile": "compactc compile contracts/veilcontract.compact contracts/managed/veilcontract",
     "test": "cross-env NODE_OPTIONS='--experimental-vm-modules' vitest run",
     "test:local": "cross-env MIDNIGHT_NETWORK=local yarn test",
     "test:preview": "cross-env MIDNIGHT_NETWORK=preview yarn test",
