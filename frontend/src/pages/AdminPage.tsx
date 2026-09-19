@@ -8,8 +8,14 @@ import { waitForContractDeployment } from '../lib/midnight';
 import WalletButton from '../components/WalletButton';
 
 function getCompiledContract() {
+  const dummyWitnesses = {
+    voter_credential: () => [{}, { voter_id: new Uint8Array(32), eligibility_key: new Uint8Array(32) }],
+    admin_secret: () => [{}, new Uint8Array(32)],
+    vote_choice: () => [{}, 0n],
+  };
+
   return CompiledContract.make('VeilContract', Contract).pipe(
-    CompiledContract.withVacantWitnesses,
+    CompiledContract.withWitnesses(dummyWitnesses as any),
     CompiledContract.withCompiledFileAssets(
       new URL('/managed', window.location.origin).toString(),
     ),
