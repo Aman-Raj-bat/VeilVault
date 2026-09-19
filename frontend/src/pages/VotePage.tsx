@@ -8,8 +8,16 @@ import WalletButton from '../components/WalletButton';
 type VoteChoice = 0 | 1 | 2; // 0=for, 1=against, 2=abstain
 
 function getCompiledContract() {
-  return CompiledContract.make('VeilContract', Contract).pipe(
-    CompiledContract.withVacantWitnesses,
+  const dummyWitnesses = {
+    voter_credential: () => [{}, { voter_id: new Uint8Array(32), eligibility_key: new Uint8Array(32) }],
+    admin_secret: () => [{}, new Uint8Array(32)],
+    vote_choice: () => [{}, 0n],
+  } as any;
+
+  const contractInstance = new Contract(dummyWitnesses);
+
+  return CompiledContract.make('VeilContract', contractInstance).pipe(
+    CompiledContract.withWitnesses(dummyWitnesses),
     CompiledContract.withCompiledFileAssets(
       new URL('/managed', window.location.origin).toString(),
     ),
@@ -80,6 +88,7 @@ export default function VotePage() {
             eligibility_key: eligibilityKey,
           }),
           vote_choice: () => BigInt(selectedChoice),
+          admin_secret: () => new Uint8Array(32) as any,
         },
         args: [],
       });

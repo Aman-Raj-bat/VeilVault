@@ -12,10 +12,14 @@ function getCompiledContract() {
     voter_credential: () => [{}, { voter_id: new Uint8Array(32), eligibility_key: new Uint8Array(32) }],
     admin_secret: () => [{}, new Uint8Array(32)],
     vote_choice: () => [{}, 0n],
-  };
+  } as any;
 
-  return CompiledContract.make('VeilContract', Contract).pipe(
-    CompiledContract.withWitnesses(dummyWitnesses as any),
+  // Pass an INSTANCE to make() instead of the class, so it doesn't crash trying to instantiate it
+  // with empty witnesses.
+  const contractInstance = new Contract(dummyWitnesses);
+
+  return CompiledContract.make('VeilContract', contractInstance).pipe(
+    CompiledContract.withWitnesses(dummyWitnesses),
     CompiledContract.withCompiledFileAssets(
       new URL('/managed', window.location.origin).toString(),
     ),
@@ -95,7 +99,9 @@ export default function AdminPage() {
         contractAddress: deployedAddress,
         circuitId: 'update_session',
         witnesses: {
+          voter_credential: () => ({ voter_id: new Uint8Array(32), eligibility_key: new Uint8Array(32) }) as any,
           admin_secret: () => skBytes,
+          vote_choice: () => 0n as any,
         },
         args: [deadline, cap, sessionOpen],
       });
