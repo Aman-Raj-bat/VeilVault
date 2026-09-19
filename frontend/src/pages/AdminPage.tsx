@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react';
 import { CompiledContract } from '@midnight-ntwrk/compact-js';
 import { createUnprovenDeployTx, submitTxAsync, createUnprovenCallTx } from '@midnight-ntwrk/midnight-js-contracts';
 import { sampleSigningKey } from '@midnight-ntwrk/compact-runtime';
-import { Contract } from '../managed/contract/index.js';
+import { Contract, pureCircuits } from '../managed/contract/index.js';
 import { useWallet } from '../contexts/WalletContext';
 import { waitForContractDeployment } from '../lib/midnight';
 import WalletButton from '../components/WalletButton';
@@ -49,8 +49,10 @@ export default function AdminPage() {
       const deadline = BigInt(Math.floor(Date.now() / 1000) + Number(daysOpen) * 24 * 60 * 60);
       const cap = BigInt(voterCap || '500');
 
-      // Admin hash — uses a zeroed key for demo (in production: user provides their key)
-      const adminHash = new Uint8Array(32);
+      // Compute the admin hash from a default secret key (all zeros for demo)
+      // In production, the user would provide their secret key during deployment
+      const defaultSk = new Uint8Array(32);
+      const adminHash = pureCircuits.vault_admin_key(defaultSk);
 
       const deployTxData = await createUnprovenDeployTx(session.providers as any, {
         compiledContract,
