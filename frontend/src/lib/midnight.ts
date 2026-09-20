@@ -2,6 +2,7 @@ import { setNetworkId } from '@midnight-ntwrk/midnight-js-network-id';
 import { FetchZkConfigProvider } from '@midnight-ntwrk/midnight-js-fetch-zk-config-provider';
 import { indexerPublicDataProvider } from '@midnight-ntwrk/midnight-js-indexer-public-data-provider';
 import { ContractState } from '@midnight-ntwrk/compact-runtime';
+import { CostModel, Transaction } from '@midnight-ntwrk/ledger-v8';
 import type { MidnightProvider, WalletProvider } from '@midnight-ntwrk/midnight-js-types';
 
 // ---- Utility: hex encoding/decoding ----
@@ -110,7 +111,6 @@ export async function createConnectedSession(api: any): Promise<ConnectedSession
 
   const proofProvider = {
     async proveTx(unprovenTx: any, _config: any) {
-      const { CostModel } = await import('@midnight-ntwrk/ledger-v8');
       return unprovenTx.prove(provingProvider, CostModel.initialCostModel());
     },
   };
@@ -122,7 +122,6 @@ export async function createConnectedSession(api: any): Promise<ConnectedSession
       const txHex = toHex(tx.serialize());
       const balanced = await api.balanceUnsealedTransaction(txHex);
       if (!balanced?.tx) throw new Error('balanceUnsealedTransaction returned invalid result');
-      const { Transaction } = await import('@midnight-ntwrk/ledger-v8');
       return Transaction.deserialize('signature', 'proof', 'binding', fromHex(balanced.tx));
     },
   };
